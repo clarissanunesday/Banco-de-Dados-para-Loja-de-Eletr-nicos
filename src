@@ -1,0 +1,99 @@
+-- Criação do banco de dados
+CREATE DATABASE IF NOT EXISTS LojaEletronicos;
+USE LojaEletronicos;
+
+-- Criação da tabela de Produtos
+CREATE TABLE IF NOT EXISTS Produto (
+    id_produto INT AUTO_INCREMENT PRIMARY KEY,  -- Identificador único do produto
+    nome VARCHAR(150) NOT NULL,                 -- Nome do produto
+    preco DECIMAL(10, 2) NOT NULL,              -- Preço do produto
+    estoque INT NOT NULL                        -- Quantidade em estoque
+);
+
+-- Criação da tabela de Fornecedores
+CREATE TABLE IF NOT EXISTS Fornecedor (
+    id_fornecedor INT AUTO_INCREMENT PRIMARY KEY,  -- Identificador único do fornecedor
+    nome VARCHAR(150) NOT NULL,                    -- Nome do fornecedor
+    contato VARCHAR(100) NOT NULL                  -- Contato do fornecedor
+);
+
+-- Criação da tabela de Compras
+CREATE TABLE IF NOT EXISTS Compra (
+    id_compra INT AUTO_INCREMENT PRIMARY KEY,  -- Identificador único da compra
+    id_fornecedor INT NOT NULL,                 -- ID do fornecedor
+    data_compra DATETIME NOT NULL,              -- Data da compra
+    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id_fornecedor) ON DELETE CASCADE  -- Relacionamento com Fornecedor
+);
+
+-- Criação da tabela de Itens de Compra
+CREATE TABLE IF NOT EXISTS Item (
+    id_item INT AUTO_INCREMENT PRIMARY KEY,     -- Identificador único do item
+    id_compra INT NOT NULL,                      -- ID da compra
+    id_produto INT NOT NULL,                     -- ID do produto
+    quantidade INT NOT NULL,                     -- Quantidade comprada do produto
+    FOREIGN KEY (id_compra) REFERENCES Compra(id_compra) ON DELETE CASCADE,   -- Relacionamento com Compra
+    FOREIGN KEY (id_produto) REFERENCES Produto(id_produto) ON DELETE CASCADE  -- Relacionamento com Produto
+);
+
+-- Inserção de dados para Produtos (6 produtos)
+INSERT INTO Produto (nome, preco, estoque)
+VALUES
+    ('Smartphone', 1500.00, 10),
+    ('Notebook', 3000.00, 5),
+    ('Fones de Ouvido', 200.00, 20),
+    ('Smartwatch', 800.00, 15),
+    ('Câmera Digital', 1200.00, 8),
+    ('Tablet', 1000.00, 12);
+
+-- Inserção de dados para Fornecedores (3 fornecedores)
+INSERT INTO Fornecedor (nome, contato)
+VALUES
+    ('Fornecedor A', 'contato@fornecedora.com'),
+    ('Fornecedor B', 'contato@fornecedorb.com'),
+    ('Fornecedor C', 'contato@fornecedorc.com');
+
+-- Inserção de dados para Compras (2 compras)
+INSERT INTO Compra (id_fornecedor, data_compra)
+VALUES
+    (1, '2024-11-25 10:00:00'),
+    (2, '2024-11-26 11:00:00');
+
+-- Inserção de dados para Itens de Compra (Itens de produtos comprados nas compras realizadas)
+INSERT INTO Item (id_compra, id_produto, quantidade)
+VALUES
+    (1, 1, 5),  -- 5 unidades de Smartphone
+    (1, 2, 3),  -- 3 unidades de Notebook
+    (2, 3, 10), -- 10 unidades de Fones de Ouvido
+    (2, 4, 5);  -- 5 unidades de Smartwatch
+
+-- Consulta 1: Listar todos os produtos com seus respectivos fornecedores
+SELECT 
+    p.nome AS produto,
+    f.nome AS fornecedor
+FROM 
+    Produto p
+JOIN 
+    Item i ON p.id_produto = i.id_produto
+JOIN 
+    Compra c ON i.id_compra = c.id_compra
+JOIN 
+    Fornecedor f ON c.id_fornecedor = f.id_fornecedor;
+
+-- Consulta 2: Mostrar o total de itens comprados por fornecedor
+SELECT 
+    f.nome AS fornecedor,
+    SUM(i.quantidade) AS total_itens_comprados
+FROM 
+    Fornecedor f
+JOIN 
+    Compra c ON f.id_fornecedor = c.id_fornecedor
+JOIN 
+    Item i ON c.id_compra = i.id_compra
+GROUP BY 
+    f.id_fornecedor;
+
+-- Consulta 3: Atualizar o estoque dos produtos com base nas compras
+UPDATE Produto p
+JOIN Item i ON p.id_produto = i.id_produto
+SET p.estoque = p.estoque + i.quantidade
+WHERE i.id_compra IN (SELECT id_compra FROM Compra WHERE data_compra >= '2024-11-25');
