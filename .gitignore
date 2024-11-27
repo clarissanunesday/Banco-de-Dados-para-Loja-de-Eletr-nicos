@@ -1,0 +1,26 @@
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de log
+*.log
+
+# Arquivos de banco de dados
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de backup
+*.bak
+*.sql~
+
+# Arquivos temporários
+*.swp
+*~
+
+# Diretórios de dependências de pacotes (caso use alguma ferramenta de gerenciamento)
+node_modules/
+venv/
+
+# Arquivos de configuração local
+*.env
