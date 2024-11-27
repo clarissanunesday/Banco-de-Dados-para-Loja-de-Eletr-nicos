@@ -1,0 +1,47 @@
+# Sistema de Gestão de Estoque de Produtos de Eletrônicos
+
+Este projeto cria e gerencia um banco de dados para uma loja de eletrônicos. Ele permite o controle de produtos, fornecedores, compras e itens de compras, bem como a atualização do estoque com base nas compras realizadas.
+
+## Estrutura do Banco de Dados
+
+O banco de dados contém as seguintes tabelas:
+
+1. **Produto**: Armazena os dados dos produtos disponíveis na loja.
+   - Campos: `id_produto`, `nome`, `preco`, `estoque`.
+
+2. **Fornecedor**: Armazena informações sobre os fornecedores dos produtos.
+   - Campos: `id_fornecedor`, `nome`, `contato`.
+
+3. **Compra**: Armazena informações sobre as compras feitas aos fornecedores.
+   - Campos: `id_compra`, `id_fornecedor`, `data_compra`.
+
+4. **Item**: Armazena os itens comprados, associando os produtos às compras realizadas.
+   - Campos: `id_item`, `id_compra`, `id_produto`, `quantidade`.
+
+## Funcionalidades
+
+- **Listar todos os produtos com seus respectivos fornecedores**.
+- **Mostrar o total de itens comprados por fornecedor**.
+- **Atualizar o estoque dos produtos com base nas compras realizadas**.
+
+## Como Usar
+
+1. Execute o script SQL para criar o banco de dados e as tabelas.
+2. Insira os dados fictícios para produtos, fornecedores, compras e itens.
+3. Realize as consultas para obter informações sobre o estoque, fornecedores e compras.
+
+## Consultas SQL
+
+1. **Listar todos os produtos com seus respectivos fornecedores**:
+   ```sql
+   SELECT 
+       p.nome AS produto,
+       f.nome AS fornecedor
+   FROM 
+       Produto p
+   JOIN 
+       Item i ON p.id_produto = i.id_produto
+   JOIN 
+       Compra c ON i.id_compra = c.id_compra
+   JOIN 
+       Fornecedor f ON c.id_fornecedor = f.id_fornecedor;
